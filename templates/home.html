@@ -1,0 +1,1432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SkyRoute - Intelligent Flight Planning</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1e40af;
+            --secondary: #06b6d4;
+            --accent: #f59e0b;
+            --success: #10b981;
+            --danger: #ef4444;
+            --dark: #0f172a;
+            --dark-light: #1e293b;
+            --gray: #64748b;
+            --light: #f8fafc;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: white;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .bg-animation::before {
+            content: '';
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(37, 99, 235, 0.1) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: moveGrid 20s linear infinite;
+        }
+
+        @keyframes moveGrid {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(50px, 50px); }
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        header {
+            text-align: center;
+            padding: 3rem 0;
+            animation: fadeInDown 0.8s ease;
+        }
+
+        .logo {
+            display: inline-flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .logo i {
+            font-size: 3rem;
+            color: var(--secondary);
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #2563eb, #06b6d4);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: var(--gray);
+            font-weight: 300;
+        }
+
+        .action-bar {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            animation: fadeInDown 0.8s ease 0.2s both;
+        }
+
+        .action-btn {
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 1rem;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            background: rgba(30, 41, 59, 0.8);
+            backdrop-filter: blur(10px);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .action-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .action-btn.voice-btn {
+            border-color: var(--success);
+        }
+
+        .action-btn.voice-btn:hover {
+            background: rgba(16, 185, 129, 0.2);
+            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.3);
+        }
+
+        .action-btn.risk-btn {
+            border-color: var(--danger);
+        }
+
+        .action-btn.risk-btn:hover {
+            background: rgba(239, 68, 68, 0.2);
+            box-shadow: 0 10px 30px rgba(239, 68, 68, 0.3);
+        }
+
+        .action-btn.dashboard-btn {
+            border-color: var(--accent);
+        }
+
+        .action-btn.dashboard-btn:hover {
+            background: rgba(245, 158, 11, 0.2);
+            box-shadow: 0 10px 30px rgba(245, 158, 11, 0.3);
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 2rem;
+            animation: fadeInUp 0.8s ease 0.2s both;
+        }
+
+        .control-panel {
+            background: rgba(30, 41, 59, 0.8);
+            backdrop-filter: blur(10px);
+            border-radius: 1.5rem;
+            padding: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .panel-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .panel-header i {
+            font-size: 1.5rem;
+            color: var(--secondary);
+        }
+
+        .panel-header h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .input-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--gray);
+            font-weight: 500;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-wrapper i {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray);
+        }
+
+        select, input {
+            width: 100%;
+            padding: 1rem 1rem 1rem 3rem;
+            background: rgba(15, 23, 42, 0.6);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 0.75rem;
+            color: white;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            appearance: none;
+            cursor: pointer;
+        }
+
+        select:focus, input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+        }
+
+        select {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2364748b'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+            background-size: 1.5rem;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        button {
+            flex: 1;
+            padding: 1rem;
+            border: none;
+            border-radius: 0.75rem;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            box-shadow: 0 10px 30px rgba(37, 99, 235, 0.3);
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 40px rgba(37, 99, 235, 0.4);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, rgba(37, 99, 235, 0.1), rgba(6, 182, 212, 0.1));
+            padding: 1.5rem;
+            border-radius: 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-card i {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            opacity: 0.8;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            color: var(--gray);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .map-container {
+            background: rgba(30, 41, 59, 0.8);
+            backdrop-filter: blur(10px);
+            border-radius: 1.5rem;
+            padding: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            min-height: 600px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .map-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .map-header h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .map-header i {
+            color: var(--secondary);
+        }
+
+        .route-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            background: rgba(37, 99, 235, 0.1);
+            border-radius: 0.75rem;
+            font-size: 0.9rem;
+        }
+
+        .route-info span {
+            font-weight: 600;
+        }
+
+        .map-display {
+            flex: 1;
+            background: rgba(15, 23, 42, 0.6);
+            border-radius: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 500px;
+            border: 2px dashed rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .map-display iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            border-radius: 1rem;
+        }
+
+        .map-placeholder {
+            text-align: center;
+            color: var(--gray);
+        }
+
+        .map-placeholder i {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 0.8; }
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .loading.active {
+            display: block;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            margin: 0 auto 1rem;
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-top: 4px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: rgba(30, 41, 59, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 1.5rem;
+            padding: 2rem;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .modal-header h3 {
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            transition: transform 0.2s;
+        }
+
+        .close-btn:hover {
+            transform: rotate(90deg);
+        }
+
+        .risk-message {
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-radius: 0.75rem;
+            border-left: 4px solid;
+            animation: slideInLeft 0.3s ease;
+        }
+
+        @keyframes slideInLeft {
+            from { transform: translateX(-20px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        .risk-high {
+            background: rgba(239, 68, 68, 0.1);
+            border-color: var(--danger);
+        }
+
+        .risk-medium {
+            background: rgba(245, 158, 11, 0.1);
+            border-color: var(--accent);
+        }
+
+        .risk-low {
+            background: rgba(16, 185, 129, 0.1);
+            border-color: var(--success);
+        }
+
+        .voice-assistant {
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .voice-icon {
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 1.5rem;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--success), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .voice-icon:hover {
+            transform: scale(1.1);
+        }
+
+        .voice-icon.listening {
+            animation: pulse-voice 1s ease-in-out infinite;
+        }
+
+        @keyframes pulse-voice {
+            0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+            50% { transform: scale(1.05); box-shadow: 0 0 0 20px rgba(16, 185, 129, 0); }
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+        }
+
+        .dashboard-card {
+            background: rgba(15, 23, 42, 0.6);
+            padding: 1.5rem;
+            border-radius: 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .dashboard-card h4 {
+            margin-bottom: 1rem;
+            color: var(--secondary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .dashboard-value {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .features {
+            margin-top: 3rem;
+            animation: fadeInUp 0.8s ease 0.4s both;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .feature-card {
+            background: rgba(30, 41, 59, 0.6);
+            backdrop-filter: blur(10px);
+            padding: 2rem;
+            border-radius: 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            border-color: var(--primary);
+            box-shadow: 0 20px 40px rgba(37, 99, 235, 0.2);
+        }
+
+        .feature-card i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .feature-card h3 {
+            font-size: 1.25rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .feature-card p {
+            color: var(--gray);
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 1024px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+
+            h1 {
+                font-size: 2.5rem;
+            }
+
+            .action-bar {
+                flex-wrap: wrap;
+            }
+
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+
+            .action-btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-animation"></div>
+    
+    <div class="container">
+        <header>
+            <div class="logo">
+                <i class="fas fa-plane-departure"></i>
+            </div>
+            <h1>SAFIR</h1>
+            <p class="subtitle">Intelligent Flight Planning with Real-Time Weather & Bird Risk Analysis</p>
+        </header>
+
+        <div class="action-bar">
+            <button class="action-btn voice-btn" onclick="openVoiceAssistant()">
+                <i class="fas fa-microphone"></i>
+                Voice Assistant
+            </button>
+            <button class="action-btn risk-btn" onclick="openRiskMessages()">
+                <i class="fas fa-exclamation-triangle"></i>
+                Risk Messages
+            </button>
+            <button class="action-btn dashboard-btn" onclick="openDashboard()">
+                <i class="fas fa-chart-line"></i>
+                Dashboard
+            </button>
+        </div>
+
+        <div class="main-content">
+            <div class="control-panel">
+                <div class="panel-header">
+                    <i class="fas fa-sliders-h"></i>
+                    <h2>Flight Parameters</h2>
+                </div>
+
+                <form id="flightForm">
+                    <div class="input-group">
+                        <label for="departure">Departure Airport</label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-plane-departure"></i>
+                            <select id="departure" required>
+                                <option value="">Loading airports...</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="arrival">Arrival Airport</label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-plane-arrival"></i>
+                            <select id="arrival" required>
+                                <option value="">Loading airports...</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="button-group">
+                        <button type="submit" class="btn-primary" id="planBtn">
+                            <i class="fas fa-route"></i>
+                            Plan Route
+                        </button>
+                        <button type="button" class="btn-secondary" onclick="resetForm()">
+                            <i class="fas fa-redo"></i>
+                            Reset
+                        </button>
+                    </div>
+                </form>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <i class="fas fa-cloud-sun" style="color: var(--accent)"></i>
+                        <div class="stat-value" id="weatherRisk">--</div>
+                        <div class="stat-label">Weather Risk</div>
+                    </div>
+                    <div class="stat-card">
+                        <i class="fas fa-dove" style="color: var(--secondary)"></i>
+                        <div class="stat-value" id="birdRisk">--</div>
+                        <div class="stat-label">Bird Risk</div>
+                    </div>
+                    <div class="stat-card">
+                        <i class="fas fa-map-marker-alt" style="color: var(--success)"></i>
+                        <div class="stat-value" id="waypointCount">--</div>
+                        <div class="stat-label">Waypoints</div>
+                    </div>
+                    <div class="stat-card">
+                        <i class="fas fa-chart-line" style="color: var(--primary)"></i>
+                        <div class="stat-value" id="totalCost">--</div>
+                        <div class="stat-label">Route Cost</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="map-container">
+                <div class="map-header">
+                    <h2>
+                        <i class="fas fa-map-marked-alt"></i>
+                        Route Visualization
+                    </h2>
+                    <div class="route-info" id="routeInfo" style="display: none;">
+                        <i class="fas fa-info-circle"></i>
+                        <span id="routeText"></span>
+                    </div>
+                </div>
+
+                <div class="map-display" id="mapDisplay">
+                    <div class="map-placeholder">
+                        <i class="fas fa-map"></i>
+                        <p>Select airports and click "Plan Route" to visualize your flight path</p>
+                    </div>
+                </div>
+
+                <div class="loading" id="loading">
+                    <div class="spinner"></div>
+                    <p>Analyzing weather patterns and bird migration data...</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="features">
+            <div class="features-grid">
+                <div class="feature-card">
+                    <i class="fas fa-brain"></i>
+                    <h3>AI-Powered Routing</h3>
+                    <p>Graph Neural Networks optimize your flight path considering multiple risk factors</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-cloud-sun-rain"></i>
+                    <h3>Real-Time Weather</h3>
+                    <p>Live weather data integration for accurate risk assessment along your route</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-binoculars"></i>
+                    <h3>Bird Strike Prevention</h3>
+                    <p>eBird API integration identifies high-risk areas for bird activity</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-layer-group"></i>
+                    <h3>Multi-Layer Analysis</h3>
+                    <p>Combines weather, wildlife, and geographical data for optimal routing</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="voiceModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-microphone"></i> Voice Assistant</h3>
+                <button class="close-btn" onclick="closeModal('voiceModal')">&times;</button>
+            </div>
+            <div class="voice-assistant">
+                <div class="voice-icon" id="voiceIcon" onclick="toggleVoiceListening()">
+                    <i class="fas fa-microphone"></i>
+                </div>
+                <h4 id="voiceStatus">Click to start speaking</h4>
+                <p id="voiceTranscript" style="color: var(--gray); margin-top: 1rem;"></p>
+                <p id="voiceResponse" style="margin-top: 1rem; padding: 1rem; background: rgba(37, 99, 235, 0.1); border-radius: 0.5rem; display: none;"></p>
+            </div>
+        </div>
+    </div>
+
+    <div id="riskModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-exclamation-triangle"></i> Risk Messages</h3>
+                <button class="close-btn" onclick="closeModal('riskModal')">&times;</button>
+            </div>
+            <div id="riskMessagesContainer">
+                <p style="color: var(--gray); text-align: center;">No active route. Plan a route to see risk assessments.</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="dashboardModal" class="modal">
+        <div class="modal-content" style="max-width: 900px;">
+            <div class="modal-header">
+                <h3><i class="fas fa-chart-line"></i> Flight Dashboard</h3>
+                <button class="close-btn" onclick="closeModal('dashboardModal')">&times;</button>
+            </div>
+            <div class="dashboard-grid" id="dashboardContent">
+                <div class="dashboard-card">
+                    <h4><i class="fas fa-temperature-high"></i> Temperature Range</h4>
+                    <div class="dashboard-value" id="dashTemp">--°C</div>
+                    <p style="color: var(--gray); font-size: 0.9rem;">Average along route</p>
+                </div>
+                <div class="dashboard-card">
+                    <h4><i class="fas fa-wind"></i> Wind Conditions</h4>
+                    <div class="dashboard-value" id="dashWind">-- kt</div>
+                    <p style="color: var(--gray); font-size: 0.9rem;">Max wind speed</p>
+                </div>
+                <div class="dashboard-card">
+                    <h4><i class="fas fa-cloud-rain"></i> Precipitation</h4>
+                    <div class="dashboard-value" id="dashPrecip">-- mm</div>
+                    <p style="color: var(--gray); font-size: 0.9rem;">Total precipitation</p>
+                </div>
+                <div class="dashboard-card">
+                    <h4><i class="fas fa-eye"></i> Visibility</h4>
+                    <div class="dashboard-value" id="dashVis">-- m</div>
+                    <p style="color: var(--gray); font-size: 0.9rem;">Minimum visibility</p>
+                </div>
+                <div class="dashboard-card">
+                    <h4><i class="fas fa-crow"></i> Bird Observations</h4>
+                    <div class="dashboard-value" id="dashBirds">--</div>
+                    <p style="color: var(--gray); font-size: 0.9rem;">Total sightings</p>
+                </div>
+                <div class="dashboard-card">
+                    <h4><i class="fas fa-route"></i> Route Segments</h4>
+                    <div class="dashboard-value" id="dashSegments">--</div>
+                    <p style="color: var(--gray); font-size: 0.9rem;">Total waypoints</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ============================================
+        // CENTRALIZED DATA MANAGEMENT
+        // ============================================
+        const AppData = {
+            airports: [],
+            currentRouteData: null,
+            clusterData: null,
+            liveFlightData: null,
+            futureSchedules: null,
+            isListening: false
+        };
+
+        // ============================================
+        // DATA FETCHERS - Centralized data loading
+        // ============================================
+        const DataFetchers = {
+            // Fetch all airports
+            async fetchAirports() {
+                try {
+                    const response = await fetch('/get-airports');
+                    if (!response.ok) throw new Error('Failed to fetch airports');
+                    AppData.airports = await response.json();
+                    return AppData.airports;
+                } catch (error) {
+                    console.error('Error fetching airports:', error);
+                    throw error;
+                }
+            },
+
+            // Fetch route/path between two airports
+            async fetchRoute(startId, endId) {
+                try {
+                    const response = await fetch('/find-path', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ startId, endId })
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (!response.ok) {
+                        throw new Error(data.error || 'Failed to fetch route');
+                    }
+                    
+                    AppData.currentRouteData = data;
+                    return data;
+                } catch (error) {
+                    console.error('Error fetching route:', error);
+                    throw error;
+                }
+            },
+
+            // Fetch cluster results data
+            async fetchClusterData() {
+                try {
+                    const response = await fetch('/data/final_cluster_results.csv');
+                    if (!response.ok) throw new Error('Failed to fetch cluster data');
+                    
+                    const text = await response.text();
+                    AppData.clusterData = this.parseCSV(text);
+                    return AppData.clusterData;
+                } catch (error) {
+                    console.error('Error fetching cluster data:', error);
+                    throw error;
+                }
+            },
+
+            // Fetch live flight data
+            async fetchLiveFlights() {
+                try {
+                    const response = await fetch('/live-flight');
+                    if (!response.ok) throw new Error('Failed to fetch live flights');
+                    
+                    AppData.liveFlightData = await response.json();
+                    return AppData.liveFlightData;
+                } catch (error) {
+                    console.error('Error fetching live flights:', error);
+                    throw error;
+                }
+            },
+
+            // Fetch future schedules
+            async fetchFutureSchedules() {
+                try {
+                    const response = await fetch('/future-schedules');
+                    if (!response.ok) throw new Error('Failed to fetch future schedules');
+                    
+                    AppData.futureSchedules = await response.json();
+                    return AppData.futureSchedules;
+                } catch (error) {
+                    console.error('Error fetching future schedules:', error);
+                    throw error;
+                }
+            },
+
+            // Fetch nearest airports by coordinates
+            async fetchNearestAirports(lat, lng, distance = 90) {
+                try {
+                    const response = await fetch('/nearest-airports', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ lat, lng, distance })
+                    });
+                    
+                    if (!response.ok) throw new Error('Failed to fetch nearest airports');
+                    return await response.json();
+                } catch (error) {
+                    console.error('Error fetching nearest airports:', error);
+                    throw error;
+                }
+            },
+
+            // Helper: Parse CSV text into structured data
+            parseCSV(text) {
+                const lines = text.split('\n').filter(line => line.trim());
+                const headers = lines[0].split(',');
+                const data = [];
+
+                for (let i = 1; i < lines.length; i++) {
+                    const values = lines[i].split(',');
+                    const row = {};
+                    headers.forEach((header, index) => {
+                        row[header.trim()] = values[index] ? values[index].trim() : '';
+                    });
+                    data.push(row);
+                }
+
+                return { headers, rows: data };
+            }
+        };
+
+        // ============================================
+        // UI UPDATES - Update interface elements
+        // ============================================
+        const UIUpdater = {
+            // Populate airport dropdowns
+            populateAirports() {
+                const departureSelect = document.getElementById('departure');
+                const arrivalSelect = document.getElementById('arrival');
+                
+                departureSelect.innerHTML = '<option value="">Select departure airport...</option>';
+                arrivalSelect.innerHTML = '<option value="">Select arrival airport...</option>';
+                
+                AppData.airports.forEach(airport => {
+                    const optionText = `${airport.iata_code || airport.id} - ${airport.name}`;
+                    
+                    const depOption = document.createElement('option');
+                    depOption.value = airport.id;
+                    depOption.textContent = optionText;
+                    departureSelect.appendChild(depOption);
+                    
+                    const arrOption = document.createElement('option');
+                    arrOption.value = airport.id;
+                    arrOption.textContent = optionText;
+                    arrivalSelect.appendChild(arrOption);
+                });
+            },
+
+            // Update statistics cards
+            updateStats(stats) {
+                document.getElementById('weatherRisk').textContent = stats.weatherRisk || '--';
+                document.getElementById('birdRisk').textContent = stats.birdRisk || '--';
+                document.getElementById('waypointCount').textContent = stats.waypoints || '--';
+                document.getElementById('totalCost').textContent = stats.totalCost || '--';
+            },
+
+            // Update dashboard values
+            updateDashboard(data) {
+                document.getElementById('dashTemp').textContent = data.temperature || '--°C';
+                document.getElementById('dashWind').textContent = data.wind || '-- kt';
+                document.getElementById('dashPrecip').textContent = data.precipitation || '-- mm';
+                document.getElementById('dashVis').textContent = data.visibility || '-- m';
+                document.getElementById('dashBirds').textContent = data.birds || '--';
+                document.getElementById('dashSegments').textContent = data.segments || '--';
+            },
+
+            // Display route on map
+            displayRoute(routeData) {
+                const mapDisplay = document.getElementById('mapDisplay');
+                mapDisplay.innerHTML = routeData.map_html;
+                
+                const routeInfo = document.getElementById('routeInfo');
+                const routeText = document.getElementById('routeText');
+                routeText.textContent = `${routeData.start_name} → ${routeData.end_name}`;
+                routeInfo.style.display = 'flex';
+            },
+
+            // Show/hide loading spinner
+            setLoading(isLoading) {
+                const loading = document.getElementById('loading');
+                if (isLoading) {
+                    loading.classList.add('active');
+                    document.querySelector('.map-placeholder')?.remove();
+                } else {
+                    loading.classList.remove('active');
+                }
+            },
+
+            // Reset form and map
+            resetUI() {
+                document.getElementById('flightForm').reset();
+                document.getElementById('mapDisplay').innerHTML = `
+                    <div class="map-placeholder">
+                        <i class="fas fa-map"></i>
+                        <p>Select airports and click "Plan Route" to visualize your flight path</p>
+                    </div>
+                `;
+                document.getElementById('routeInfo').style.display = 'none';
+                this.updateStats({});
+                AppData.currentRouteData = null;
+            }
+        };
+
+        // ============================================
+        // STATISTICS CALCULATOR
+        // ============================================
+        const StatsCalculator = {
+            async calculateRouteStats() {
+                if (!AppData.clusterData) {
+                    await DataFetchers.fetchClusterData();
+                }
+
+                const rows = AppData.clusterData.rows;
+                let totalWeatherRisk = 0;
+                let totalBirdRisk = 0;
+                let maxWeatherRisk = 0;
+                let maxBirdRisk = 0;
+                let totalBirdObs = 0;
+                let totalTemp = 0;
+                let maxWind = 0;
+                let totalPrecip = 0;
+                let count = rows.length;
+
+                rows.forEach(row => {
+                    const weatherRisk = parseFloat(row['weather_risk']) || 0;
+                    const birdRisk = parseFloat(row['bird_risk']) || 0;
+                    const birdObs = parseInt(row['bird_observations']) || 0;
+                    const temp = parseFloat(row['temperature']) || 0;
+                    const precip = parseFloat(row['precipitation']) || 0;
+                    const windSpeed = parseFloat(row['wind_speed']) || 0;
+                    
+                    totalWeatherRisk += weatherRisk;
+                    totalBirdRisk += birdRisk;
+                    maxWeatherRisk = Math.max(maxWeatherRisk, weatherRisk);
+                    maxBirdRisk = Math.max(maxBirdRisk, birdRisk);
+                    totalBirdObs += birdObs;
+                    totalTemp += temp;
+                    maxWind = Math.max(maxWind, windSpeed);
+                    totalPrecip += precip;
+                });
+
+                const avgWeatherRisk = (totalWeatherRisk / count).toFixed(1);
+                const avgBirdRisk = (totalBirdRisk / count).toFixed(1);
+                const avgTemp = (totalTemp / count).toFixed(1);
+
+                // Update stats cards
+                UIUpdater.updateStats({
+                    weatherRisk: avgWeatherRisk,
+                    birdRisk: avgBirdRisk,
+                    waypoints: count,
+                    totalCost: ((totalWeatherRisk + totalBirdRisk) / count).toFixed(1)
+                });
+
+                // Update dashboard
+                UIUpdater.updateDashboard({
+                    temperature: avgTemp + '°C',
+                    wind: maxWind.toFixed(1) + ' kt',
+                    precipitation: totalPrecip.toFixed(1) + ' mm',
+                    visibility: '8000+ m',
+                    birds: totalBirdObs,
+                    segments: count
+                });
+
+                // Generate risk messages
+                this.generateRiskMessages(maxWeatherRisk, maxBirdRisk, totalBirdObs, count);
+            },
+
+            generateRiskMessages(maxWeather, maxBird, totalBirds, waypointCount) {
+                const container = document.getElementById('riskMessagesContainer');
+                container.innerHTML = '';
+
+                const messages = [];
+
+                if (maxWeather > 7) {
+                    messages.push({
+                        level: 'high',
+                        icon: 'fa-exclamation-circle',
+                        title: 'High Weather Risk Detected',
+                        text: `Severe weather conditions along route (Risk: ${maxWeather.toFixed(1)}/10). Consider alternative routing or delay.`
+                    });
+                } else if (maxWeather > 4) {
+                    messages.push({
+                        level: 'medium',
+                        icon: 'fa-exclamation-triangle',
+                        title: 'Moderate Weather Risk',
+                        text: `Some adverse weather conditions expected (Risk: ${maxWeather.toFixed(1)}/10). Monitor conditions closely.`
+                    });
+                } else {
+                    messages.push({
+                        level: 'low',
+                        icon: 'fa-check-circle',
+                        title: 'Favorable Weather Conditions',
+                        text: `Weather conditions are favorable (Risk: ${maxWeather.toFixed(1)}/10). Proceed as planned.`
+                    });
+                }
+
+                if (maxBird > 6) {
+                    messages.push({
+                        level: 'high',
+                        icon: 'fa-exclamation-circle',
+                        title: 'High Bird Strike Risk',
+                        text: `Significant bird activity detected (${totalBirds} observations, Risk: ${maxBird.toFixed(1)}/10). Exercise extreme caution during takeoff/landing.`
+                    });
+                } else if (maxBird > 3) {
+                    messages.push({
+                        level: 'medium',
+                        icon: 'fa-exclamation-triangle',
+                        title: 'Moderate Bird Activity',
+                        text: `Moderate bird activity along route (${totalBirds} observations, Risk: ${maxBird.toFixed(1)}/10). Standard bird avoidance procedures apply.`
+                    });
+                } else {
+                    messages.push({
+                        level: 'low',
+                        icon: 'fa-check-circle',
+                        title: 'Low Bird Strike Risk',
+                        text: `Minimal bird activity (${totalBirds} observations, Risk: ${maxBird.toFixed(1)}/10). Normal operations.`
+                    });
+                }
+
+                messages.push({
+                    level: 'low',
+                    icon: 'fa-info-circle',
+                    title: 'Route Information',
+                    text: `Route optimized through ${waypointCount} waypoints using GNN-based pathfinding algorithm.`
+                });
+
+                messages.forEach((msg, index) => {
+                    setTimeout(() => {
+                        const div = document.createElement('div');
+                        div.className = `risk-message risk-${msg.level}`;
+                        div.innerHTML = `
+                            <div style="display: flex; align-items: start; gap: 1rem;">
+                                <i class="fas ${msg.icon}" style="font-size: 1.5rem; margin-top: 0.25rem;"></i>
+                                <div>
+                                    <h4 style="margin-bottom: 0.5rem;">${msg.title}</h4>
+                                    <p style="color: var(--gray); margin: 0;">${msg.text}</p>
+                                </div>
+                            </div>
+                        `;
+                        container.appendChild(div);
+                    }, index * 100);
+                });
+            }
+        };
+
+        // ============================================
+        // EVENT HANDLERS
+        // ============================================
+        
+        // Load airports on page load
+        async function loadAirports() {
+            try {
+                await DataFetchers.fetchAirports();
+                UIUpdater.populateAirports();
+            } catch (error) {
+                alert('Failed to load airports. Please refresh the page.');
+            }
+        }
+
+        // Form submission handler
+        document.getElementById('flightForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const departure = document.getElementById('departure').value;
+            const arrival = document.getElementById('arrival').value;
+            
+            if (!departure || !arrival) {
+                alert('Please select both departure and arrival airports');
+                return;
+            }
+
+            const planBtn = document.getElementById('planBtn');
+            planBtn.disabled = true;
+            planBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Planning...';
+
+            UIUpdater.setLoading(true);
+            
+            try {
+                const routeData = await DataFetchers.fetchRoute(departure, arrival);
+                UIUpdater.setLoading(false);
+                UIUpdater.displayRoute(routeData);
+                await StatsCalculator.calculateRouteStats();
+            } catch (error) {
+                alert('Error planning route: ' + error.message);
+                UIUpdater.setLoading(false);
+                document.getElementById('mapDisplay').innerHTML = `
+                    <div class="map-placeholder">
+                        <i class="fas fa-exclamation-circle" style="color: var(--danger);"></i>
+                        <p>Error: ${error.message}</p>
+                    </div>
+                `;
+            } finally {
+                planBtn.disabled = false;
+                planBtn.innerHTML = '<i class="fas fa-route"></i> Plan Route';
+            }
+        });
+
+        function resetForm() {
+            UIUpdater.resetUI();
+        }
+
+        // ============================================
+        // MODAL FUNCTIONS
+        // ============================================
+        
+        function openVoiceAssistant() {
+            document.getElementById('voiceModal').classList.add('active');
+        }
+
+        function openRiskMessages() {
+            if (!AppData.currentRouteData) {
+                alert('Please plan a route first to see risk messages.');
+                return;
+            }
+            document.getElementById('riskModal').classList.add('active');
+        }
+
+        function openDashboard() {
+            if (!AppData.currentRouteData) {
+                alert('Please plan a route first to view the dashboard.');
+                return;
+            }
+            document.getElementById('dashboardModal').classList.add('active');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+            if (modalId === 'voiceModal' && AppData.isListening) {
+                toggleVoiceListening();
+            }
+        }
+
+        // Voice Assistant
+        function toggleVoiceListening() {
+            const voiceIcon = document.getElementById('voiceIcon');
+            const voiceStatus = document.getElementById('voiceStatus');
+            const voiceTranscript = document.getElementById('voiceTranscript');
+            const voiceResponse = document.getElementById('voiceResponse');
+
+            AppData.isListening = !AppData.isListening;
+
+            if (AppData.isListening) {
+                voiceIcon.classList.add('listening');
+                voiceStatus.textContent = 'Listening...';
+                voiceTranscript.textContent = '';
+                voiceResponse.style.display = 'none';
+
+                setTimeout(() => {
+                    voiceTranscript.textContent = '"What is the current weather risk for my route?"';
+                    
+                    setTimeout(() => {
+                        AppData.isListening = false;
+                        voiceIcon.classList.remove('listening');
+                        voiceStatus.textContent = 'Processing...';
+                        
+                        setTimeout(() => {
+                            voiceStatus.textContent = 'Response:';
+                            voiceResponse.style.display = 'block';
+                            
+                            const weatherRisk = document.getElementById('weatherRisk').textContent;
+                            const birdRisk = document.getElementById('birdRisk').textContent;
+                            
+                            if (weatherRisk !== '--') {
+                                voiceResponse.textContent = `The current weather risk along your route is ${weatherRisk} out of 10, and the bird strike risk is ${birdRisk} out of 10. Overall, conditions are ${parseFloat(weatherRisk) < 5 ? 'favorable' : 'challenging'} for your flight.`;
+                            } else {
+                                voiceResponse.textContent = 'Please plan a route first, and I can provide you with detailed weather and bird risk information along your flight path.';
+                            }
+                        }, 1000);
+                    }, 2000);
+                }, 2000);
+            } else {
+                voiceIcon.classList.remove('listening');
+                voiceStatus.textContent = 'Click to start speaking';
+            }
+        }
+
+        // Close modals when clicking outside
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.classList.remove('active');
+                if (AppData.isListening) {
+                    toggleVoiceListening();
+                }
+            }
+        }
+
+        // Initialize on page load
+        window.addEventListener('DOMContentLoaded', loadAirports);
+    </script>
+</body>
+</html>

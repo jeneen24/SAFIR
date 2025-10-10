@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Future Flight Schedules</title>
+    <style>
+        /* General page styling */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f9;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        /* Styling the schedule list */
+        ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        li {
+            background-color: #fff;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        li strong {
+            color: #333;
+        }
+
+        /* Scrollable container for the list */
+        .schedule-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        /* Styling the 'Back Home' link */
+        a {
+            display: block;
+            margin-top: 20px;
+            text-align: center;
+            font-size: 16px;
+            color: #007BFF;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        /* Add some space at the bottom of the page */
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            color: #aaa;
+        }
+    </style>
+</head>
+<body>
+    <h1>Future Flight Schedules</h1>
+    
+    {% if schedules %}
+        <div class="schedule-list">
+            <ul>
+            {% for flight in schedules %}
+                <li>
+                    <strong>Flight Number:</strong> {{ flight.flight.number }} <br>
+                    <strong>Airline:</strong> {{ flight.airline.name }} <br>
+                    <strong>Aircraft:</strong> {{ flight.aircraft.modelText }} <br>
+                    <strong>Departure:</strong> {{ flight.departure.scheduledTime }} <br>
+                    <strong>Departure Airport:</strong> {{ flight.departure.iataCode }} <br>
+                    <strong>Departure Gate:</strong> {{ flight.departure.gate }} <br>
+                    <strong>Arrival:</strong> {{ flight.arrival.scheduledTime }} <br>
+                    <strong>Arrival Airport:</strong> {{ flight.arrival.iataCode }} <br>
+                    <strong>Arrival Gate:</strong> {{ flight.arrival.gate }} <br>
+                </li>
+            {% endfor %}
+            </ul>
+        </div>
+    {% else %}
+        <p>No schedules found for the specified criteria.</p>
+    {% endif %}
+    
+    <a href="/">Back Home</a>
+    
+    <footer>
+        <p>&copy; 2025 Flight Schedule System</p>
+    </footer>
+</body>
+</html>

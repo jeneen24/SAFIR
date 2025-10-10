@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Nearest Airports</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h1>Airports & Cities Near ({{ lat }}, {{ lng }})</h1>
+    {% if error %}
+        <p style="color:red;">{{ error }}</p>
+    {% endif %}
+    {% if results %}
+        <ul>
+        {% for item in results %}
+            <li>
+                <strong>{{ item["nameAirport"] }}</strong>
+                <br>
+                IATA: {{ item["codeIataAirport"] }}<br>
+                Country: {{ item["nameCountry"] }}<br>
+                Distance: {{ item["distance"] }} meters<br>
+                Coordinates: ({{ item["latitudeAirport"] }}, {{ item["longitudeAirport"] }})
+            </li>
+            <hr>
+        {% endfor %}
+        </ul>
+    {% else %}
+        <p>No airports or cities found within the specified distance.</p>
+    {% endif %}
+    <a href="/nearest-airports">Search Again</a>
+</body>
+</html>

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Live Flight Data</title>
+    <style>
+        .flight-container {
+            max-height: 400px; /* Set a fixed height */
+            overflow-y: auto; /* Enable vertical scrolling */
+            border: 1px solid #ccc; /* Optional: Visual boundary */
+            padding: 10px; /* Optional: Inner spacing */
+            background-color: #f9f9f9; /* Optional: Background color */
+        }
+    </style>
+</head>
+<body>
+    <h1>Live Flight Data</h1>
+    <div class="flight-container"> <!-- Applied the class here -->
+        {% if flight_data %}
+            {% for flight in flight_data %}
+                <div class="flight">
+                    <p><strong>Flight:</strong> {{ flight.flight.iataNumber }}</p>
+                    <p><strong>Aircraft:</strong> {{ flight.aircraft.iataCode }}</p>
+                    <p><strong>Route:</strong> {{ flight.departure.iataCode }} → {{ flight.arrival.iataCode }}</p>
+                    <p><strong>Coordinates:</strong> ({{ flight.geography.latitude }}, {{ flight.geography.longitude }})</p>
+                    <p><strong>Status:</strong> {{ flight.status }}</p>
+                </div>
+                <hr>
+            {% endfor %}
+        {% else %}
+            <p>No flight data available.</p>
+        {% endif %}
+    </div>
+    <a href="/">Back Home</a>
+</body>
+</html>

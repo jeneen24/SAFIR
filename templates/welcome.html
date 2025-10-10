@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Welcome to SAFIR</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1e40af;
+            --secondary: #06b6d4;
+            --accent: #f59e0b;
+            --success: #10b981;
+            --danger: #ef4444;
+            --dark: #0f172a;
+            --dark-light: #1e293b;
+            --gray: #64748b;
+            --light: #f8fafc;
+        }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: white;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            overflow: hidden;
+        }
+        .bg-animation::before {
+            content: '';
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(37, 99, 235, 0.1) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: moveGrid 20s linear infinite;
+        }
+        @keyframes moveGrid {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(50px, 50px); }
+        }
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 4rem 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: rgba(30, 41, 59, 0.85);
+            border-radius: 2rem;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            margin-top: 6vh;
+        }
+        .logo {
+            display: inline-flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        .logo i {
+            font-size: 3rem;
+            color: var(--secondary);
+            animation: float 3s ease-in-out infinite;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #2563eb, #06b6d4);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+        .subtitle {
+            font-size: 1.2rem;
+            color: var(--gray);
+            font-weight: 300;
+            margin-bottom: 2rem;
+        }
+        .btn-group {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 2rem;
+        }
+        .action-btn {
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 1rem;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            background: rgba(30, 41, 59, 0.8);
+            backdrop-filter: blur(10px);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+        }
+        .action-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+        .action-btn.get-btn {
+            border-color: var(--success);
+        }
+        .action-btn.get-btn:hover {
+            background: rgba(16, 185, 129, 0.2);
+            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.3);
+        }
+        .action-btn.contact-btn {
+            border-color: var(--accent);
+        }
+        .action-btn.contact-btn:hover {
+            background: rgba(245, 158, 11, 0.2);
+            box-shadow: 0 10px 30px rgba(245, 158, 11, 0.3);
+        }
+        @media (max-width: 768px) {
+            .container { padding: 2rem 1rem; }
+            h1 { font-size: 2rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-animation"></div>
+    <div class="container">
+        <div class="logo">
+            <i class="fas fa-plane-departure"></i>
+            <span style="font-size:1.5rem;font-weight:700;color:var(--secondary);">SAFIR</span>
+        </div>
+        <h1>Welcome to SAFIR</h1>
+        <div class="subtitle">Intelligent Flight Planning for Safer Skies</div>
+        <p>
+            SAFIR is an intelligent flight planning platform that leverages AI, real-time weather, and bird risk analysis to optimize your routes and ensure safer skies.<br>
+            Explore advanced features and get started with your flight planning journey!
+        </p>
+        <div class="btn-group">
+            <button class="action-btn get-btn" onclick="window.location.href='/home'">
+                <i class="fa-solid fa-plane-departure"></i> Get Started
+            </button>
+            <button class="action-btn contact-btn" onclick="document.getElementById('contact-modal').style.display='flex'">
+                <i class="fa-solid fa-users"></i> Connect Us
+            </button>
+        </div>
+        <!-- Modal Overlay and Box -->
+        <!-- Modal Overlay and Box -->
+<div id="contact-modal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.7); z-index:1000; align-items:center; justify-content:center;">
+    <div style="
+        background: rgba(15, 23, 42, 0.95);
+        border: 1px solid rgba(245,158,11,0.3);
+        border-radius: 1rem;
+        padding: 2rem 2.5rem;
+        color: #f8fafc;
+        box-shadow: 0 0 30px rgba(245,158,11,0.3);
+        text-align: center;
+        position: relative;
+        min-width: 320px;
+        max-width: 90vw;
+        backdrop-filter: blur(10px);
+    ">
+        
+        <button onclick="document.getElementById('contact-modal').style.display='none'" 
+            style="position:absolute; top:1rem; right:1rem; background:none; border:none; font-size:1.5rem; color:var(--accent); cursor:pointer;">
+            &times;
+        </button>
+
+        <div style="display:flex; flex-direction:column; align-items:center; gap:0.5rem;">
+            <i class="fa-solid fa-users fa-2x" style="color:var(--accent);"></i>
+            <h2 style="font-size:1.5rem; color:var(--accent); font-weight:700;">Meet the SAFIR Crew</h2>
+        </div>
+
+        <p style="margin-top:1rem; line-height:1.6; font-size:1rem; color:#e2e8f0;">
+            We’re a passionate student team from <strong>The Hashemite University</strong> <br>
+            SAFIR is our mission to make flight planning smarter, safer, and more reliable for every pilot in the sky.
+        </p>
+
+        <p style="margin-top:1rem; color:#cbd5e1;">
+            Have feedback, ideas, or just want to say Thanks? Let’s connect!
+        </p>
+
+        <div style="margin-top:1.2rem;">
+            <p style="font-size:1rem; margin:0.3rem 0;">
+                <i class="fa-solid fa-envelope" style="color:var(--accent);"></i> &nbsp; <strong>jeneenisleem@gmail.com</strong>
+            </p>
+            <p style="font-size:1rem; margin:0.3rem 0;">
+                <i class="fa-solid fa-phone" style="color:var(--accent);"></i> &nbsp; <strong>+962 7 9105 0265</strong>
+            </p>
+        </div>
+
+        <p style="margin-top:1.5rem; font-size:0.9rem; color:#94a3b8;">
+            ✈️ Together, we aim for safer skies with every flight.
+        </p>
+    </div>
+</div>
+
+    </div>
+</body>
+</html>

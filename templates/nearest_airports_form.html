@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Nearest Airports</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h1>Find Nearest Airports</h1>
+    <form method="POST" action="/nearest-airports">
+        <label for="lat">Latitude:</label>
+        <input type="text" id="lat" name="lat" required>
+        <br>
+        <label for="lng">Longitude:</label>
+        <input type="text" id="lng" name="lng" required>
+        <br>
+        <label for="distance">Distance (km):</label>
+        <input type="text" id="distance" name="distance" value="90">
+        <br>
+        <button type="submit">Search</button>
+    </form>
+</body>
+</html>
