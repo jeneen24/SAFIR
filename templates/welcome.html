@@ -2,8 +2,10 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Welcome to SAFIR</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         :root {
@@ -15,200 +17,160 @@
             --danger: #ef4444;
             --dark: #0f172a;
             --dark-light: #1e293b;
-            --gray: #64748b;
+            --gray: #94a3b8;
             --light: #f8fafc;
         }
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            background: linear-gradient(135deg, var(--dark) 0%, var(--dark-light) 100%);
             color: white;
             min-height: 100vh;
             overflow-x: hidden;
         }
-        .bg-animation {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 0;
-            overflow: hidden;
-        }
-        .bg-animation::before {
-            content: '';
-            position: absolute;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(37, 99, 235, 0.1) 1px, transparent 1px);
-            background-size: 50px 50px;
-            animation: moveGrid 20s linear infinite;
-        }
-        @keyframes moveGrid {
-            0% { transform: translate(0, 0); }
-            100% { transform: translate(50px, 50px); }
-        }
-        .container {
-            position: relative;
-            z-index: 1;
-            max-width: 600px;
-            margin: 0 auto;
-            padding: 4rem 2rem;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            background: rgba(30, 41, 59, 0.85);
-            border-radius: 2rem;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
-            margin-top: 6vh;
-        }
-        .logo {
-            display: inline-flex;
-            align-items: center;
-            gap: 1rem;
-            margin-bottom: 1.5rem;
-        }
-        .logo i {
-            font-size: 3rem;
-            color: var(--secondary);
-            animation: float 3s ease-in-out infinite;
-        }
-        @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
-        }
-        h1 {
-            font-size: 3rem;
-            font-weight: 800;
-            background: linear-gradient(135deg, #2563eb, #06b6d4);
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 0.5rem;
-        }
-        .subtitle {
-            font-size: 1.2rem;
-            color: var(--gray);
-            font-weight: 300;
-            margin-bottom: 2rem;
-        }
-        .btn-group {
-            display: flex;
-            gap: 1rem;
-            justify-content: center;
-            margin-top: 2rem;
-        }
-        .action-btn {
-            padding: 1rem 2rem;
-            border: none;
-            border-radius: 1rem;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            background: rgba(30, 41, 59, 0.8);
-            backdrop-filter: blur(10px);
-            color: white;
-            border: 2px solid rgba(255, 255, 255, 0.1);
-        }
-        .action-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-        }
-        .action-btn.get-btn {
-            border-color: var(--success);
-        }
-        .action-btn.get-btn:hover {
-            background: rgba(16, 185, 129, 0.2);
-            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.3);
-        }
-        .action-btn.contact-btn {
-            border-color: var(--accent);
-        }
-        .action-btn.contact-btn:hover {
-            background: rgba(245, 158, 11, 0.2);
-            box-shadow: 0 10px 30px rgba(245, 158, 11, 0.3);
-        }
-        @media (max-width: 768px) {
-            .container { padding: 2rem 1rem; }
-            h1 { font-size: 2rem; }
+
+        /* Background animated grid */
+        .bg-animation { position: fixed; inset: 0; z-index: 0; overflow: hidden; }
+        .bg-animation::before { content: ''; position: absolute; width: 200%; height: 200%; background: radial-gradient(circle, rgba(37,99,235,0.08) 1px, transparent 1px); background-size: 50px 50px; animation: moveGrid 20s linear infinite; }
+        @keyframes moveGrid { 0% { transform: translate(0,0);} 100% { transform: translate(50px,50px);} }
+
+        /* Navbar */
+        .nav { position: relative; z-index: 1; max-width: 1200px; margin: 0 auto; padding: 1rem 1.25rem; display: flex; align-items: center; justify-content: space-between; }
+        .nav-left { display: flex; align-items: center; gap: .75rem; }
+        .brand-mark { width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; color: var(--secondary); background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); box-shadow: 0 8px 24px rgba(0,0,0,0.25) inset; }
+        .brand-name { font-weight: 800; color: #e2e8f0; letter-spacing: .5px; }
+        .nav-links { display: flex; align-items: center; gap: 1.25rem; }
+        .nav-links a { color: #cbd5e1; text-decoration: none; font-weight: 500; }
+        .nav-links a:hover { color: white; }
+        .get-started { background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; border: none; padding: .6rem 1rem; border-radius: 999px; cursor: pointer; box-shadow: 0 10px 30px rgba(37,99,235,.35); }
+        .get-started:hover { transform: translateY(-1px); }
+
+        /* Hero */
+        .hero { position: relative; z-index: 1; max-width: 1200px; margin: 0 auto; padding: 2rem 1.25rem 3rem; display: grid; grid-template-columns: 1.1fr 1fr; gap: 2rem; align-items: center; }
+        .hero h1 { font-size: clamp(2.2rem, 5vw, 4rem); font-weight: 800; background: linear-gradient(135deg, var(--light), #cbd5e1); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: .5rem; }
+        .subtitle { font-size: 1.2rem; color: var(--gray); font-weight: 300; }
+        .description { margin-top: 1rem; color: #cbd5e1; line-height: 1.8; max-width: 60ch; }
+        .cta-group { display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 1.75rem; }
+        .btn { border: 2px solid rgba(255,255,255,0.12); background: rgba(30,41,59,0.6); color: white; padding: .9rem 1.4rem; border-radius: 14px; font-weight: 600; display: inline-flex; align-items: center; gap: .6rem; cursor: pointer; backdrop-filter: blur(10px); transition: transform .2s ease, box-shadow .2s ease, background .2s ease; }
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 12px 30px rgba(0,0,0,.35); }
+        .btn-primary { border-color: rgba(16,185,129,.35); background: rgba(16,185,129,.15); }
+        .btn-secondary { border-color: rgba(245,158,11,.35); background: rgba(245,158,11,.12); }
+
+        /* Floating feature cards */
+        .cards { position: relative; height: 520px; }
+        .card { position: absolute; width: 260px; background: rgba(15,23,42,0.92); border-radius: 16px; overflow: hidden; border: 1px solid rgba(255,255,255,.08); box-shadow: 0 18px 60px rgba(0,0,0,.45); }
+        .card img { width: 100%; height: 150px; object-fit: cover; display: block; opacity: .9; }
+        .chip { position: absolute; bottom: 10px; left: 10px; padding: .4rem .8rem; font-size: .85rem; border-radius: 999px; background: rgba(2,6,23,.85); color: #e2e8f0; border: 1px solid rgba(255,255,255,.12); box-shadow: 0 10px 30px rgba(0,0,0,.4); }
+        .card-1 { top: 6px; left: 20px; transform: rotate(-2deg); }
+        .card-2 { top: 80px; right: 10px; transform: rotate(3deg); }
+        .card-3 { bottom: 92px; left: 0; transform: rotate(2deg); }
+        .card-4 { bottom: 18px; right: 40px; transform: rotate(-3deg); }
+        .float { animation: float 6s ease-in-out infinite; }
+        @keyframes float { 0%,100%{ translate:0 0 } 50%{ translate:0 -10px } }
+
+        /* Modal */
+        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.7); z-index: 50; align-items: center; justify-content: center; backdrop-filter: blur(6px); }
+        .modal-content { background: rgba(15, 23, 42, 0.95); border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 1rem; padding: 2rem 2.5rem; color: #f8fafc; box-shadow: 0 0 30px rgba(245, 158, 11, 0.25); text-align: center; position: relative; min-width: 320px; max-width: 90vw; }
+        .close-btn { position: absolute; top: 1rem; right: 1rem; background: none; border: none; font-size: 1.5rem; color: var(--accent); cursor: pointer; transition: transform .2s; }
+        .close-btn:hover { transform: rotate(90deg); }
+        .contact-row { margin-top: .75rem; color: #e2e8f0; }
+        .contact-row a { color: #f8fafc; text-decoration: none; }
+        .contact-row a:hover { color: var(--accent); }
+
+        @media (max-width: 980px) {
+            .hero { grid-template-columns: 1fr; }
+            .cards { height: 380px; margin-top: 1rem; }
+            .card { width: 220px; }
         }
     </style>
 </head>
 <body>
     <div class="bg-animation"></div>
-    <div class="container">
-        <div class="logo">
-            <i class="fas fa-plane-departure"></i>
-            <span style="font-size:1.5rem;font-weight:700;color:var(--secondary);">SAFIR</span>
+
+    <!-- Navbar -->
+    <nav class="nav">
+        <div class="nav-left">
+            <div class="brand-mark"><i class="fa-solid fa-plane-departure"></i></div>
+            <div class="brand-name">SAFIR</div>
         </div>
-        <h1>Welcome to SAFIR</h1>
-        <div class="subtitle">Intelligent Flight Planning for Safer Skies</div>
-        <p>
-            SAFIR is an intelligent flight planning platform that leverages AI, real-time weather, and bird risk analysis to optimize your routes and ensure safer skies.<br>
-            Explore advanced features and get started with your flight planning journey!
-        </p>
-        <div class="btn-group">
-            <button class="action-btn get-btn" onclick="window.location.href='/home'">
-                <i class="fa-solid fa-plane-departure"></i> Get Started
-            </button>
-            <button class="action-btn contact-btn" onclick="document.getElementById('contact-modal').style.display='flex'">
-                <i class="fa-solid fa-users"></i> Connect Us
-            </button>
+        <div class="nav-links">
+            <a href="#features">Features</a>
+            <a href="#how">How It Works</a>
+            <a href="#about" onclick="openModal(); return false;">About</a>
+            <button class="get-started" onclick="window.location.href='/home'">Get Started</button>
         </div>
-        <!-- Modal Overlay and Box -->
-        <!-- Modal Overlay and Box -->
-<div id="contact-modal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.7); z-index:1000; align-items:center; justify-content:center;">
-    <div style="
-        background: rgba(15, 23, 42, 0.95);
-        border: 1px solid rgba(245,158,11,0.3);
-        border-radius: 1rem;
-        padding: 2rem 2.5rem;
-        color: #f8fafc;
-        box-shadow: 0 0 30px rgba(245,158,11,0.3);
-        text-align: center;
-        position: relative;
-        min-width: 320px;
-        max-width: 90vw;
-        backdrop-filter: blur(10px);
-    ">
-        
-        <button onclick="document.getElementById('contact-modal').style.display='none'" 
-            style="position:absolute; top:1rem; right:1rem; background:none; border:none; font-size:1.5rem; color:var(--accent); cursor:pointer;">
-            &times;
-        </button>
+    </nav>
 
-        <div style="display:flex; flex-direction:column; align-items:center; gap:0.5rem;">
-            <i class="fa-solid fa-users fa-2x" style="color:var(--accent);"></i>
-            <h2 style="font-size:1.5rem; color:var(--accent); font-weight:700;">Meet the SAFIR Crew</h2>
-        </div>
-
-        <p style="margin-top:1rem; line-height:1.6; font-size:1rem; color:#e2e8f0;">
-            We’re a passionate student team from <strong>The Hashemite University</strong> <br>
-            SAFIR is our mission to make flight planning smarter, safer, and more reliable for every pilot in the sky.
-        </p>
-
-        <p style="margin-top:1rem; color:#cbd5e1;">
-            Have feedback, ideas, or just want to say Thanks? Let’s connect!
-        </p>
-
-        <div style="margin-top:1.2rem;">
-            <p style="font-size:1rem; margin:0.3rem 0;">
-                <i class="fa-solid fa-envelope" style="color:var(--accent);"></i> &nbsp; <strong>jeneenisleem@gmail.com</strong>
+    <!-- Hero -->
+    <section class="hero">
+        <div>
+            <h1>Welcome to SAFIR</h1>
+            <div class="subtitle">Intelligent Flight Planning for Safer Skies</div>
+            <p class="description">
+                SAFIR is an intelligent flight planning platform that leverages AI, real-time weather,
+                and bird risk analysis to optimize your routes and ensure safer skies. Explore advanced
+                features and get started with your flight planning journey!
             </p>
-            <p style="font-size:1rem; margin:0.3rem 0;">
-                <i class="fa-solid fa-phone" style="color:var(--accent);"></i> &nbsp; <strong>+962 7 9105 0265</strong>
-            </p>
+            <div class="cta-group">
+                <button class="btn btn-primary" onclick="window.location.href='/home'">
+                    <i class="fa-solid fa-plane-departure"></i>
+                    Get Started
+                </button>
+                <button class="btn btn-secondary" onclick="openModal()">
+                    <i class="fa-solid fa-users"></i>
+                    Connect Us
+                </button>
+            </div>
         </div>
 
-        <p style="margin-top:1.5rem; font-size:0.9rem; color:#94a3b8;">
-            ✈️ Together, we aim for safer skies with every flight.
-        </p>
-    </div>
-</div>
+        <div class="cards" aria-hidden="true">
+            <div class="card card-1 float">
+                <img src="https://aerospaceamerica.aiaa.org/wp-content/uploads/2023/01/AA_AI_Feb23.jpg" alt="Route map" />
+                <span class="chip">Route Map</span>
+            </div>
+            <div class="card card-2 float" style="animation-delay:.4s;">
+                <img src="https://media.licdn.com/dms/image/v2/D4E12AQEz_1VDSghPlw/article-cover_image-shrink_720_1280/B4EZYNVCdiHkAI-/0/1743980341471?e=2147483647&v=beta&t=7QMxyunWo6_HgpQqXPGAET4QYaotDkpuaIPb56qkx3c" alt="AI routing" />
+                <span class="chip">AI Routing</span>
+            </div>
+            <div class="card card-3 float" style="animation-delay:.2s;">
+                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS0AFS4-Lj6hh3KvFxasM_KuO9hd4DXiqBT7A&s" alt="Weather conditions" />
+                <span class="chip">Weather</span>
+            </div>
+            <div class="card card-4 float" style="animation-delay:.7s;">
+                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR5ODK60Hu451nXO9nE23kbgvRpetR-NrjMCQ&s" alt="Bird risk" />
+                <span class="chip">Bird Risk</span>
+            </div>
+        </div>
+    </section>
 
+    <!-- Contact Modal -->
+    <div id="contact-modal" class="modal-overlay" onclick="closeModalOnOutsideClick(event)">
+        <div class="modal-content">
+            <button class="close-btn" onclick="closeModal()" aria-label="Close modal">&times;</button>
+            <div style="display:flex; align-items:center; gap:.6rem; margin-bottom:.25rem; color: var(--accent)">
+                <i class="fa-solid fa-users"></i>
+                <span style="font-weight:700">Meet the SAFIR Crew</span>
+            </div>
+            <p style="color:#e2e8f0; line-height:1.7;">
+                We're a passionate student team from <strong>The Hashemite University</strong>.<br>
+                SAFIR is our mission to make flight planning smarter, safer, and more reliable for every pilot in the sky.
+            </p>
+            <div class="contact-row">
+                <i class="fa-solid fa-envelope" style="color:var(--accent)"></i>
+                <a href="mailto:jeneenisleem@gmail.com">jeneenisleem@gmail.com</a>
+            </div>
+            <div class="contact-row">
+                <i class="fa-solid fa-phone" style="color:var(--accent)"></i>
+                <a href="tel:+962791050265">+962 7 9105 0265</a>
+            </div>
+            <p style="margin-top:1rem; color:#94a3b8;">✈️ Together, we aim for safer skies with every flight.</p>
+        </div>
     </div>
+
+    <script>
+        function openModal() { document.getElementById('contact-modal').style.display = 'flex'; }
+        function closeModal() { document.getElementById('contact-modal').style.display = 'none'; }
+        function closeModalOnOutsideClick(event) { if (event.target.id === 'contact-modal') closeModal(); }
+        document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
+    </script>
 </body>
 </html>

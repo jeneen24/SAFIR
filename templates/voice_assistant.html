@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voice Assistant - SAFIR</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #2563eb;
+            --secondary: #06b6d4;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --dark: #0f172a;
+            --dark-light: #1e293b;
+            --gray: #64748b;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .bg-animation::before {
+            content: '';
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(37, 99, 235, 0.1) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: moveGrid 20s linear infinite;
+        }
+
+        @keyframes moveGrid {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(50px, 50px); }
+        }
+
+        header {
+            position: relative;
+            z-index: 1;
+            padding: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            background: rgba(30, 41, 59, 0.8);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .back-btn {
+            padding: 0.75rem 1.5rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 0.75rem;
+            color: white;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateX(-5px);
+        }
+
+        .header-title {
+            flex: 1;
+            text-align: center;
+        }
+
+        .header-title h1 {
+            font-size: 2rem;
+            background: linear-gradient(135deg, #2563eb, #06b6d4);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .main-container {
+            position: relative;
+            z-index: 1;
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .voice-interface {
+            width: 100%;
+            max-width: 1200px;
+            display: grid;
+            grid-template-columns: 1fr 2fr 1fr;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .side-button {
+            background: rgba(30, 41, 59, 0.8);
+            backdrop-filter: blur(10px);
+            border-radius: 1.5rem;
+            padding: 3rem 2rem;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .side-button:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.4);
+        }
+
+        .side-button.hijack {
+            border-color: var(--danger);
+        }
+
+        .side-button.hijack:hover {
+            background: rgba(239, 68, 68, 0.1);
+            border-color: var(--danger);
+        }
+
+        .side-button.health {
+            border-color: var(--warning);
+        }
+
+        .side-button.health:hover {
+            background: rgba(245, 158, 11, 0.1);
+            border-color: var(--warning);
+        }
+
+        .side-button i {
+            font-size: 4rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .side-button.hijack i {
+            color: var(--danger);
+        }
+
+        .side-button.health i {
+            color: var(--warning);
+        }
+
+        .side-button h3 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .side-button p {
+            color: var(--gray);
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        .mic-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .mic-circle {
+            width: 250px;
+            height: 250px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--success), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 20px 60px rgba(16, 185, 129, 0.4);
+            position: relative;
+        }
+
+        .mic-circle::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 3px solid rgba(16, 185, 129, 0.5);
+            animation: pulse-ring 2s ease-out infinite;
+        }
+
+        @keyframes pulse-ring {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(1.3);
+                opacity: 0;
+            }
+        }
+
+        .mic-circle:hover {
+            transform: scale(1.1);
+            box-shadow: 0 30px 80px rgba(16, 185, 129, 0.6);
+        }
+
+        .mic-circle.listening {
+            animation: pulse-mic 1s ease-in-out infinite;
+            background: linear-gradient(135deg, #ef4444, #f59e0b);
+            box-shadow: 0 20px 60px rgba(239, 68, 68, 0.6);
+        }
+
+        .mic-circle.listening::before {
+            border-color: rgba(239, 68, 68, 0.5);
+        }
+
+        @keyframes pulse-mic {
+            0%, 100% { 
+                transform: scale(1); 
+            }
+            50% { 
+                transform: scale(1.05); 
+            }
+        }
+
+        .mic-circle i {
+            font-size: 6rem;
+            color: white;
+            z-index: 1;
+        }
+
+        .status-text {
+            text-align: center;
+        }
+
+        .status-text h2 {
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+            color: var(--success);
+        }
+
+        .status-text.listening h2 {
+            color: var(--danger);
+        }
+
+        .status-text p {
+            color: var(--gray);
+            font-size: 1rem;
+        }
+
+        .transcript-box {
+            background: rgba(30, 41, 59, 0.8);
+            backdrop-filter: blur(10px);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            min-height: 80px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .transcript-box p {
+            color: var(--gray);
+            font-size: 0.9rem;
+            font-style: italic;
+        }
+
+        .transcript-box.active p {
+            color: white;
+            font-style: normal;
+            font-size: 1.1rem;
+        }
+
+        .response-box {
+            background: rgba(37, 99, 235, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            border: 2px solid var(--primary);
+            max-width: 800px;
+            margin: 2rem auto 0;
+            display: none;
+        }
+
+        .response-box.active {
+            display: block;
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .response-box h4 {
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--primary);
+        }
+
+        .alert-modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            align-items: center;
+            justify-content: center;
+        }
+
+        .alert-modal.active {
+            display: flex;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .alert-content {
+            background: rgba(30, 41, 59, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 1.5rem;
+            padding: 2rem;
+            max-width: 600px;
+            width: 90%;
+            border: 2px solid;
+            animation: slideUp 0.3s ease;
+        }
+
+        .alert-content.hijack-alert {
+            border-color: var(--danger);
+        }
+
+        .alert-content.health-alert {
+            border-color: var(--warning);
+        }
+
+        .alert-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .alert-header i {
+            font-size: 3rem;
+        }
+
+        .alert-content.hijack-alert .alert-header i {
+            color: var(--danger);
+        }
+
+        .alert-content.health-alert .alert-header i {
+            color: var(--warning);
+        }
+
+        .alert-header h3 {
+            font-size: 1.5rem;
+        }
+
+        .alert-body {
+            margin-bottom: 1.5rem;
+        }
+
+        .alert-body p {
+            color: var(--gray);
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+
+        .alert-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .alert-btn {
+            flex: 1;
+            padding: 1rem;
+            border: none;
+            border-radius: 0.75rem;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .alert-btn.primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+        }
+
+        .alert-btn.primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(37, 99, 235, 0.4);
+        }
+
+        .alert-btn.secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .alert-btn.secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        @media (max-width: 1024px) {
+            .voice-interface {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+
+            .mic-circle {
+                width: 200px;
+                height: 200px;
+            }
+
+            .mic-circle i {
+                font-size: 4rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            header {
+                padding: 1rem;
+            }
+
+            .header-title h1 {
+                font-size: 1.5rem;
+            }
+
+            .side-button {
+                padding: 2rem 1.5rem;
+            }
+
+            .side-button i {
+                font-size: 3rem;
+            }
+
+            .side-button h3 {
+                font-size: 1.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-animation"></div>
+
+    <header>
+        <a href="/" class="back-btn">
+            <i class="fas fa-arrow-left"></i>
+            Back to Home
+        </a>
+        <div class="header-title">
+            <h1><i class="fas fa-microphone"></i> Voice Assistant</h1>
+        </div>
+        <div style="width: 150px;"></div>
+    </header>
+
+    <div class="main-container">
+        <div class="voice-interface">
+            <div class="side-button hijack" onclick="showHijackAlert()">
+                <i class="fas fa-exclamation-triangle"></i>
+                <h3>Hijacking Risk</h3>
+                <p>Report security threats or suspicious activities</p>
+            </div>
+
+            <div class="mic-container">
+                <div class="mic-circle" id="micCircle" onclick="toggleListening()">
+                    <i class="fas fa-microphone" id="micIcon"></i>
+                </div>
+                
+                <div class="status-text" id="statusText">
+                    <h2>Click to Start</h2>
+                    <p>Tap the microphone to begin voice commands</p>
+                </div>
+
+                <div class="transcript-box" id="transcriptBox">
+                    <p>Your speech will appear here...</p>
+                </div>
+
+                <div class="response-box" id="responseBox">
+                    <h4><i class="fas fa-robot"></i> Assistant Response:</h4>
+                    <p id="responseText"></p>
+                </div>
+            </div>
+
+            <div class="side-button health" onclick="showHealthAlert()">
+                <i class="fas fa-heartbeat"></i>
+                <h3>Pilot Health Risk</h3>
+                <p>Report medical emergencies or health concerns</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="alert-modal" id="hijackModal">
+        <div class="alert-content hijack-alert">
+            <div class="alert-header">
+                <i class="fas fa-exclamation-triangle"></i>
+                <h3>Hijacking Risk Alert</h3>
+            </div>
+            <div class="alert-body">
+                <p><strong>This is a critical security alert.</strong></p>
+                <p>If you are experiencing a hijacking situation or suspect unauthorized activity on board, please confirm to immediately notify authorities and activate emergency protocols.</p>
+                <p>All communications will be encrypted and sent to air traffic control and security personnel.</p>
+            </div>
+            <div class="alert-actions">
+                <button class="alert-btn primary" onclick="confirmHijackAlert()">
+                    <i class="fas fa-shield-alt"></i> Activate Emergency Protocol
+                </button>
+                <button class="alert-btn secondary" onclick="closeModal('hijackModal')">
+                    Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="alert-modal" id="healthModal">
+        <div class="alert-content health-alert">
+            <div class="alert-header">
+                <i class="fas fa-heartbeat"></i>
+                <h3>Pilot Health Risk Alert</h3>
+            </div>
+            <div class="alert-body">
+                <p><strong>Medical assistance alert.</strong></p>
+                <p>If you or a crew member are experiencing a medical emergency, please confirm to notify medical support teams and prepare for emergency assistance.</p>
+                <p>Please specify the nature of the medical issue:</p>
+                <ul style="color: var(--gray); margin-left: 1.5rem; line-height: 1.8;">
+                    <li>Chest pain or cardiac issues</li>
+                    <li>Loss of consciousness</li>
+                    <li>Severe injury</li>
+                    <li>Other medical emergency</li>
+                </ul>
+            </div>
+            <div class="alert-actions">
+                <button class="alert-btn primary" onclick="confirmHealthAlert()">
+                    <i class="fas fa-ambulance"></i> Request Medical Assistance
+                </button>
+                <button class="alert-btn secondary" onclick="closeModal('healthModal')">
+                    Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let isListening = false;
+        let recognition = null;
+
+        // Initialize speech recognition if available
+        if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            recognition = new SpeechRecognition();
+            recognition.continuous = false;
+            recognition.interimResults = false;
+            recognition.lang = 'en-US';
+
+            recognition.onresult = function(event) {
+                const transcript = event.results[0][0].transcript;
+                displayTranscript(transcript);
+                processVoiceCommand(transcript);
+            };
+
+            recognition.onerror = function(event) {
+                console.error('Speech recognition error:', event.error);
+                stopListening();
+                showResponse('Sorry, I could not understand. Please try again.');
+            };
+
+            recognition.onend = function() {
+                if (isListening) {
+                    stopListening();
+                }
+            };
+        }
+
+        function toggleListening() {
+            if (isListening) {
+                stopListening();
+            } else {
+                startListening();
+            }
+        }
+
+        function startListening() {
+            if (!recognition) {
+                // Fallback simulation if speech recognition is not available
+                simulateSpeechRecognition();
+                return;
+            }
+
+            isListening = true;
+            const micCircle = document.getElementById('micCircle');
+            const statusText = document.getElementById('statusText');
+            const micIcon = document.getElementById('micIcon');
+
+            micCircle.classList.add('listening');
+            statusText.classList.add('listening');
+            statusText.innerHTML = '<h2>Listening...</h2><p>Speak now</p>';
+            micIcon.className = 'fas fa-circle';
+
+            document.getElementById('transcriptBox').innerHTML = '<p style="color: var(--primary);">Listening...</p>';
+            document.getElementById('responseBox').classList.remove('active');
+
+            recognition.start();
+        }
+
+        function stopListening() {
+            isListening = false;
+            const micCircle = document.getElementById('micCircle');
+            const statusText = document.getElementById('statusText');
+            const micIcon = document.getElementById('micIcon');
+
+            micCircle.classList.remove('listening');
+            statusText.classList.remove('listening');
+            statusText.innerHTML = '<h2>Click to Start</h2><p>Tap the microphone to begin voice commands</p>';
+            micIcon.className = 'fas fa-microphone';
+
+            if (recognition) {
+                recognition.stop();
+            }
+        }
+
+        function simulateSpeechRecognition() {
+            // Simulation for browsers without speech recognition
+            isListening = true;
+            const micCircle = document.getElementById('micCircle');
+            const statusText = document.getElementById('statusText');
+            const micIcon = document.getElementById('micIcon');
+
+            micCircle.classList.add('listening');
+            statusText.classList.add('listening');
+            statusText.innerHTML = '<h2>Listening...</h2><p>Speak now</p>';
+            micIcon.className = 'fas fa-circle';
+
+            document.getElementById('transcriptBox').innerHTML = '<p style="color: var(--primary);">Listening...</p>';
+
+            setTimeout(() => {
+                const sampleCommands = [
+                    "What is the current weather risk?",
+                    "Show me alternate routes",
+                    "What is the bird strike risk?",
+                    "Check flight status"
+                ];
+                const randomCommand = sampleCommands[Math.floor(Math.random() * sampleCommands.length)];
+                displayTranscript(randomCommand);
+                processVoiceCommand(randomCommand);
+                stopListening();
+            }, 2000);
+        }
+
+        function displayTranscript(text) {
+            const transcriptBox = document.getElementById('transcriptBox');
+            transcriptBox.classList.add('active');
+            transcriptBox.innerHTML = `<p>"${text}"</p>`;
+        }
+
+        function processVoiceCommand(command) {
+            const lowerCommand = command.toLowerCase();
+            let response = '';
+
+            if (lowerCommand.includes('weather') || lowerCommand.includes('risk')) {
+                response = 'The current weather risk assessment shows favorable conditions along your planned route. Wind speeds are within normal parameters and visibility is excellent.';
+            } else if (lowerCommand.includes('bird') || lowerCommand.includes('strike')) {
+                response = 'Bird strike risk is currently low. There are minimal bird observations along your flight path. Standard avoidance procedures apply.';
+            } else if (lowerCommand.includes('route') || lowerCommand.includes('alternate')) {
+                response = 'I can help you find alternate routes. Please specify your departure and destination airports on the main planning page.';
+            } else if (lowerCommand.includes('status') || lowerCommand.includes('flight')) {
+                response = 'To check flight status, please plan a route on the main page. I can then provide detailed information about weather, bird risks, and optimal waypoints.';
+            } else {
+                response = 'I understand you said: "' + command + '". I can help you with weather risks, bird strike information, route planning, and flight status. How can I assist you?';
+            }
+
+            showResponse(response);
+        }
+
+        function showResponse(text) {
+            const responseBox = document.getElementById('responseBox');
+            const responseText = document.getElementById('responseText');
+            
+            responseText.textContent = text;
+            responseBox.classList.add('active');
+        }
+
+        function showHijackAlert() {
+            document.getElementById('hijackModal').classList.add('active');
+        }
+
+        function showHealthAlert() {
+            document.getElementById('healthModal').classList.add('active');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+
+        function confirmHijackAlert() {
+            alert('EMERGENCY PROTOCOL ACTIVATED\n\nSecurity alert has been sent to:\n• Air Traffic Control\n• Airport Security\n• Emergency Response Teams\n\nHelp is on the way. Stay calm and follow emergency procedures.');
+            closeModal('hijackModal');
+        }
+
+        function confirmHealthAlert() {
+            alert('MEDICAL ASSISTANCE REQUESTED\n\nMedical alert has been sent to:\n• Flight Medical Support\n• Ground Medical Teams\n• Nearest Airport Emergency Services\n\nMedical assistance is being coordinated. Please provide any additional details to the crew.');
+            closeModal('healthModal');
+        }
+
+        // Close modals when clicking outside
+        window.onclick = function(event) {
+            if (event.target.classList.contains('alert-modal')) {
+                event.target.classList.remove('active');
+            }
+        }
+    </script>
+</body>
+</html>

@@ -129,6 +129,7 @@
             backdrop-filter: blur(10px);
             color: white;
             border: 2px solid rgba(255, 255, 255, 0.1);
+            text-decoration: none;
         }
 
         .action-btn:hover {
@@ -143,15 +144,6 @@
         .action-btn.voice-btn:hover {
             background: rgba(16, 185, 129, 0.2);
             box-shadow: 0 10px 30px rgba(16, 185, 129, 0.3);
-        }
-
-        .action-btn.risk-btn {
-            border-color: var(--danger);
-        }
-
-        .action-btn.risk-btn:hover {
-            background: rgba(239, 68, 68, 0.2);
-            box-shadow: 0 10px 30px rgba(239, 68, 68, 0.3);
         }
 
         .action-btn.dashboard-btn {
@@ -444,165 +436,6 @@
             100% { transform: rotate(360deg); }
         }
 
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(10px);
-            animation: fadeIn 0.3s ease;
-        }
-
-        .modal.active {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .modal-content {
-            background: rgba(30, 41, 59, 0.95);
-            backdrop-filter: blur(20px);
-            border-radius: 1.5rem;
-            padding: 2rem;
-            max-width: 600px;
-            width: 90%;
-            max-height: 80vh;
-            overflow-y: auto;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            animation: slideUp 0.3s ease;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        @keyframes slideUp {
-            from { transform: translateY(50px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1.5rem;
-            padding-bottom: 1rem;
-            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .modal-header h3 {
-            font-size: 1.5rem;
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-        }
-
-        .close-btn {
-            background: none;
-            border: none;
-            color: white;
-            font-size: 1.5rem;
-            cursor: pointer;
-            padding: 0.5rem;
-            transition: transform 0.2s;
-        }
-
-        .close-btn:hover {
-            transform: rotate(90deg);
-        }
-
-        .risk-message {
-            padding: 1rem;
-            margin-bottom: 1rem;
-            border-radius: 0.75rem;
-            border-left: 4px solid;
-            animation: slideInLeft 0.3s ease;
-        }
-
-        @keyframes slideInLeft {
-            from { transform: translateX(-20px); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
-        }
-
-        .risk-high {
-            background: rgba(239, 68, 68, 0.1);
-            border-color: var(--danger);
-        }
-
-        .risk-medium {
-            background: rgba(245, 158, 11, 0.1);
-            border-color: var(--accent);
-        }
-
-        .risk-low {
-            background: rgba(16, 185, 129, 0.1);
-            border-color: var(--success);
-        }
-
-        .voice-assistant {
-            text-align: center;
-            padding: 2rem;
-        }
-
-        .voice-icon {
-            width: 100px;
-            height: 100px;
-            margin: 0 auto 1.5rem;
-            border-radius: 50%;
-            background: linear-gradient(135deg, var(--success), var(--secondary));
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 3rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .voice-icon:hover {
-            transform: scale(1.1);
-        }
-
-        .voice-icon.listening {
-            animation: pulse-voice 1s ease-in-out infinite;
-        }
-
-        @keyframes pulse-voice {
-            0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
-            50% { transform: scale(1.05); box-shadow: 0 0 0 20px rgba(16, 185, 129, 0); }
-        }
-
-        .dashboard-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 1.5rem;
-        }
-
-        .dashboard-card {
-            background: rgba(15, 23, 42, 0.6);
-            padding: 1.5rem;
-            border-radius: 1rem;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .dashboard-card h4 {
-            margin-bottom: 1rem;
-            color: var(--secondary);
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .dashboard-value {
-            font-size: 2rem;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
-        }
-
         .features {
             margin-top: 3rem;
             animation: fadeInUp 0.8s ease 0.4s both;
@@ -685,10 +518,6 @@
             .action-bar {
                 flex-wrap: wrap;
             }
-
-            .dashboard-grid {
-                grid-template-columns: 1fr;
-            }
         }
 
         @media (max-width: 768px) {
@@ -728,18 +557,14 @@
         </header>
 
         <div class="action-bar">
-            <button class="action-btn voice-btn" onclick="openVoiceAssistant()">
+            <a href="/voice-assistant" class="action-btn voice-btn">
                 <i class="fas fa-microphone"></i>
                 Voice Assistant
-            </button>
-            <button class="action-btn risk-btn" onclick="openRiskMessages()">
-                <i class="fas fa-exclamation-triangle"></i>
-                Risk Messages
-            </button>
-            <button class="action-btn dashboard-btn" onclick="openDashboard()">
+            </a>
+            <a href="/dashboard" class="action-btn dashboard-btn" target="_blank">
                 <i class="fas fa-chart-line"></i>
                 Dashboard
-            </button>
+            </a>
         </div>
 
         <div class="main-content">
@@ -858,94 +683,14 @@
         </div>
     </div>
 
-    <div id="voiceModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3><i class="fas fa-microphone"></i> Voice Assistant</h3>
-                <button class="close-btn" onclick="closeModal('voiceModal')">&times;</button>
-            </div>
-            <div class="voice-assistant">
-                <div class="voice-icon" id="voiceIcon" onclick="toggleVoiceListening()">
-                    <i class="fas fa-microphone"></i>
-                </div>
-                <h4 id="voiceStatus">Click to start speaking</h4>
-                <p id="voiceTranscript" style="color: var(--gray); margin-top: 1rem;"></p>
-                <p id="voiceResponse" style="margin-top: 1rem; padding: 1rem; background: rgba(37, 99, 235, 0.1); border-radius: 0.5rem; display: none;"></p>
-            </div>
-        </div>
-    </div>
-
-    <div id="riskModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3><i class="fas fa-exclamation-triangle"></i> Risk Messages</h3>
-                <button class="close-btn" onclick="closeModal('riskModal')">&times;</button>
-            </div>
-            <div id="riskMessagesContainer">
-                <p style="color: var(--gray); text-align: center;">No active route. Plan a route to see risk assessments.</p>
-            </div>
-        </div>
-    </div>
-
-    <div id="dashboardModal" class="modal">
-        <div class="modal-content" style="max-width: 900px;">
-            <div class="modal-header">
-                <h3><i class="fas fa-chart-line"></i> Flight Dashboard</h3>
-                <button class="close-btn" onclick="closeModal('dashboardModal')">&times;</button>
-            </div>
-            <div class="dashboard-grid" id="dashboardContent">
-                <div class="dashboard-card">
-                    <h4><i class="fas fa-temperature-high"></i> Temperature Range</h4>
-                    <div class="dashboard-value" id="dashTemp">--°C</div>
-                    <p style="color: var(--gray); font-size: 0.9rem;">Average along route</p>
-                </div>
-                <div class="dashboard-card">
-                    <h4><i class="fas fa-wind"></i> Wind Conditions</h4>
-                    <div class="dashboard-value" id="dashWind">-- kt</div>
-                    <p style="color: var(--gray); font-size: 0.9rem;">Max wind speed</p>
-                </div>
-                <div class="dashboard-card">
-                    <h4><i class="fas fa-cloud-rain"></i> Precipitation</h4>
-                    <div class="dashboard-value" id="dashPrecip">-- mm</div>
-                    <p style="color: var(--gray); font-size: 0.9rem;">Total precipitation</p>
-                </div>
-                <div class="dashboard-card">
-                    <h4><i class="fas fa-eye"></i> Visibility</h4>
-                    <div class="dashboard-value" id="dashVis">-- m</div>
-                    <p style="color: var(--gray); font-size: 0.9rem;">Minimum visibility</p>
-                </div>
-                <div class="dashboard-card">
-                    <h4><i class="fas fa-crow"></i> Bird Observations</h4>
-                    <div class="dashboard-value" id="dashBirds">--</div>
-                    <p style="color: var(--gray); font-size: 0.9rem;">Total sightings</p>
-                </div>
-                <div class="dashboard-card">
-                    <h4><i class="fas fa-route"></i> Route Segments</h4>
-                    <div class="dashboard-value" id="dashSegments">--</div>
-                    <p style="color: var(--gray); font-size: 0.9rem;">Total waypoints</p>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <script>
-        // ============================================
-        // CENTRALIZED DATA MANAGEMENT
-        // ============================================
         const AppData = {
             airports: [],
             currentRouteData: null,
-            clusterData: null,
-            liveFlightData: null,
-            futureSchedules: null,
-            isListening: false
+            clusterData: null
         };
 
-        // ============================================
-        // DATA FETCHERS - Centralized data loading
-        // ============================================
         const DataFetchers = {
-            // Fetch all airports
             async fetchAirports() {
                 try {
                     const response = await fetch('/get-airports');
@@ -958,7 +703,6 @@
                 }
             },
 
-            // Fetch route/path between two airports
             async fetchRoute(startId, endId) {
                 try {
                     const response = await fetch('/find-path', {
@@ -981,7 +725,6 @@
                 }
             },
 
-            // Fetch cluster results data
             async fetchClusterData() {
                 try {
                     const response = await fetch('/data/final_cluster_results.csv');
@@ -996,52 +739,6 @@
                 }
             },
 
-            // Fetch live flight data
-            async fetchLiveFlights() {
-                try {
-                    const response = await fetch('/live-flight');
-                    if (!response.ok) throw new Error('Failed to fetch live flights');
-                    
-                    AppData.liveFlightData = await response.json();
-                    return AppData.liveFlightData;
-                } catch (error) {
-                    console.error('Error fetching live flights:', error);
-                    throw error;
-                }
-            },
-
-            // Fetch future schedules
-            async fetchFutureSchedules() {
-                try {
-                    const response = await fetch('/future-schedules');
-                    if (!response.ok) throw new Error('Failed to fetch future schedules');
-                    
-                    AppData.futureSchedules = await response.json();
-                    return AppData.futureSchedules;
-                } catch (error) {
-                    console.error('Error fetching future schedules:', error);
-                    throw error;
-                }
-            },
-
-            // Fetch nearest airports by coordinates
-            async fetchNearestAirports(lat, lng, distance = 90) {
-                try {
-                    const response = await fetch('/nearest-airports', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ lat, lng, distance })
-                    });
-                    
-                    if (!response.ok) throw new Error('Failed to fetch nearest airports');
-                    return await response.json();
-                } catch (error) {
-                    console.error('Error fetching nearest airports:', error);
-                    throw error;
-                }
-            },
-
-            // Helper: Parse CSV text into structured data
             parseCSV(text) {
                 const lines = text.split('\n').filter(line => line.trim());
                 const headers = lines[0].split(',');
@@ -1060,11 +757,7 @@
             }
         };
 
-        // ============================================
-        // UI UPDATES - Update interface elements
-        // ============================================
         const UIUpdater = {
-            // Populate airport dropdowns
             populateAirports() {
                 const departureSelect = document.getElementById('departure');
                 const arrivalSelect = document.getElementById('arrival');
@@ -1087,7 +780,6 @@
                 });
             },
 
-            // Update statistics cards
             updateStats(stats) {
                 document.getElementById('weatherRisk').textContent = stats.weatherRisk || '--';
                 document.getElementById('birdRisk').textContent = stats.birdRisk || '--';
@@ -1095,17 +787,6 @@
                 document.getElementById('totalCost').textContent = stats.totalCost || '--';
             },
 
-            // Update dashboard values
-            updateDashboard(data) {
-                document.getElementById('dashTemp').textContent = data.temperature || '--°C';
-                document.getElementById('dashWind').textContent = data.wind || '-- kt';
-                document.getElementById('dashPrecip').textContent = data.precipitation || '-- mm';
-                document.getElementById('dashVis').textContent = data.visibility || '-- m';
-                document.getElementById('dashBirds').textContent = data.birds || '--';
-                document.getElementById('dashSegments').textContent = data.segments || '--';
-            },
-
-            // Display route on map
             displayRoute(routeData) {
                 const mapDisplay = document.getElementById('mapDisplay');
                 mapDisplay.innerHTML = routeData.map_html;
@@ -1116,7 +797,6 @@
                 routeInfo.style.display = 'flex';
             },
 
-            // Show/hide loading spinner
             setLoading(isLoading) {
                 const loading = document.getElementById('loading');
                 if (isLoading) {
@@ -1127,7 +807,6 @@
                 }
             },
 
-            // Reset form and map
             resetUI() {
                 document.getElementById('flightForm').reset();
                 document.getElementById('mapDisplay').innerHTML = `
@@ -1142,9 +821,6 @@
             }
         };
 
-        // ============================================
-        // STATISTICS CALCULATOR
-        // ============================================
         const StatsCalculator = {
             async calculateRouteStats() {
                 if (!AppData.clusterData) {
@@ -1154,141 +830,28 @@
                 const rows = AppData.clusterData.rows;
                 let totalWeatherRisk = 0;
                 let totalBirdRisk = 0;
-                let maxWeatherRisk = 0;
-                let maxBirdRisk = 0;
-                let totalBirdObs = 0;
-                let totalTemp = 0;
-                let maxWind = 0;
-                let totalPrecip = 0;
                 let count = rows.length;
 
                 rows.forEach(row => {
                     const weatherRisk = parseFloat(row['weather_risk']) || 0;
                     const birdRisk = parseFloat(row['bird_risk']) || 0;
-                    const birdObs = parseInt(row['bird_observations']) || 0;
-                    const temp = parseFloat(row['temperature']) || 0;
-                    const precip = parseFloat(row['precipitation']) || 0;
-                    const windSpeed = parseFloat(row['wind_speed']) || 0;
                     
                     totalWeatherRisk += weatherRisk;
                     totalBirdRisk += birdRisk;
-                    maxWeatherRisk = Math.max(maxWeatherRisk, weatherRisk);
-                    maxBirdRisk = Math.max(maxBirdRisk, birdRisk);
-                    totalBirdObs += birdObs;
-                    totalTemp += temp;
-                    maxWind = Math.max(maxWind, windSpeed);
-                    totalPrecip += precip;
                 });
 
                 const avgWeatherRisk = (totalWeatherRisk / count).toFixed(1);
                 const avgBirdRisk = (totalBirdRisk / count).toFixed(1);
-                const avgTemp = (totalTemp / count).toFixed(1);
 
-                // Update stats cards
                 UIUpdater.updateStats({
                     weatherRisk: avgWeatherRisk,
                     birdRisk: avgBirdRisk,
                     waypoints: count,
                     totalCost: ((totalWeatherRisk + totalBirdRisk) / count).toFixed(1)
                 });
-
-                // Update dashboard
-                UIUpdater.updateDashboard({
-                    temperature: avgTemp + '°C',
-                    wind: maxWind.toFixed(1) + ' kt',
-                    precipitation: totalPrecip.toFixed(1) + ' mm',
-                    visibility: '8000+ m',
-                    birds: totalBirdObs,
-                    segments: count
-                });
-
-                // Generate risk messages
-                this.generateRiskMessages(maxWeatherRisk, maxBirdRisk, totalBirdObs, count);
-            },
-
-            generateRiskMessages(maxWeather, maxBird, totalBirds, waypointCount) {
-                const container = document.getElementById('riskMessagesContainer');
-                container.innerHTML = '';
-
-                const messages = [];
-
-                if (maxWeather > 7) {
-                    messages.push({
-                        level: 'high',
-                        icon: 'fa-exclamation-circle',
-                        title: 'High Weather Risk Detected',
-                        text: `Severe weather conditions along route (Risk: ${maxWeather.toFixed(1)}/10). Consider alternative routing or delay.`
-                    });
-                } else if (maxWeather > 4) {
-                    messages.push({
-                        level: 'medium',
-                        icon: 'fa-exclamation-triangle',
-                        title: 'Moderate Weather Risk',
-                        text: `Some adverse weather conditions expected (Risk: ${maxWeather.toFixed(1)}/10). Monitor conditions closely.`
-                    });
-                } else {
-                    messages.push({
-                        level: 'low',
-                        icon: 'fa-check-circle',
-                        title: 'Favorable Weather Conditions',
-                        text: `Weather conditions are favorable (Risk: ${maxWeather.toFixed(1)}/10). Proceed as planned.`
-                    });
-                }
-
-                if (maxBird > 6) {
-                    messages.push({
-                        level: 'high',
-                        icon: 'fa-exclamation-circle',
-                        title: 'High Bird Strike Risk',
-                        text: `Significant bird activity detected (${totalBirds} observations, Risk: ${maxBird.toFixed(1)}/10). Exercise extreme caution during takeoff/landing.`
-                    });
-                } else if (maxBird > 3) {
-                    messages.push({
-                        level: 'medium',
-                        icon: 'fa-exclamation-triangle',
-                        title: 'Moderate Bird Activity',
-                        text: `Moderate bird activity along route (${totalBirds} observations, Risk: ${maxBird.toFixed(1)}/10). Standard bird avoidance procedures apply.`
-                    });
-                } else {
-                    messages.push({
-                        level: 'low',
-                        icon: 'fa-check-circle',
-                        title: 'Low Bird Strike Risk',
-                        text: `Minimal bird activity (${totalBirds} observations, Risk: ${maxBird.toFixed(1)}/10). Normal operations.`
-                    });
-                }
-
-                messages.push({
-                    level: 'low',
-                    icon: 'fa-info-circle',
-                    title: 'Route Information',
-                    text: `Route optimized through ${waypointCount} waypoints using GNN-based pathfinding algorithm.`
-                });
-
-                messages.forEach((msg, index) => {
-                    setTimeout(() => {
-                        const div = document.createElement('div');
-                        div.className = `risk-message risk-${msg.level}`;
-                        div.innerHTML = `
-                            <div style="display: flex; align-items: start; gap: 1rem;">
-                                <i class="fas ${msg.icon}" style="font-size: 1.5rem; margin-top: 0.25rem;"></i>
-                                <div>
-                                    <h4 style="margin-bottom: 0.5rem;">${msg.title}</h4>
-                                    <p style="color: var(--gray); margin: 0;">${msg.text}</p>
-                                </div>
-                            </div>
-                        `;
-                        container.appendChild(div);
-                    }, index * 100);
-                });
             }
         };
 
-        // ============================================
-        // EVENT HANDLERS
-        // ============================================
-        
-        // Load airports on page load
         async function loadAirports() {
             try {
                 await DataFetchers.fetchAirports();
@@ -1298,7 +861,6 @@
             }
         }
 
-        // Form submission handler
         document.getElementById('flightForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
@@ -1340,92 +902,6 @@
             UIUpdater.resetUI();
         }
 
-        // ============================================
-        // MODAL FUNCTIONS
-        // ============================================
-        
-        function openVoiceAssistant() {
-            document.getElementById('voiceModal').classList.add('active');
-        }
-
-        function openRiskMessages() {
-            if (!AppData.currentRouteData) {
-                alert('Please plan a route first to see risk messages.');
-                return;
-            }
-            document.getElementById('riskModal').classList.add('active');
-        }
-
-        function openDashboard() {
-            if (!AppData.currentRouteData) {
-                alert('Please plan a route first to view the dashboard.');
-                return;
-            }
-            document.getElementById('dashboardModal').classList.add('active');
-        }
-
-        function closeModal(modalId) {
-            document.getElementById(modalId).classList.remove('active');
-            if (modalId === 'voiceModal' && AppData.isListening) {
-                toggleVoiceListening();
-            }
-        }
-
-        // Voice Assistant
-        function toggleVoiceListening() {
-            const voiceIcon = document.getElementById('voiceIcon');
-            const voiceStatus = document.getElementById('voiceStatus');
-            const voiceTranscript = document.getElementById('voiceTranscript');
-            const voiceResponse = document.getElementById('voiceResponse');
-
-            AppData.isListening = !AppData.isListening;
-
-            if (AppData.isListening) {
-                voiceIcon.classList.add('listening');
-                voiceStatus.textContent = 'Listening...';
-                voiceTranscript.textContent = '';
-                voiceResponse.style.display = 'none';
-
-                setTimeout(() => {
-                    voiceTranscript.textContent = '"What is the current weather risk for my route?"';
-                    
-                    setTimeout(() => {
-                        AppData.isListening = false;
-                        voiceIcon.classList.remove('listening');
-                        voiceStatus.textContent = 'Processing...';
-                        
-                        setTimeout(() => {
-                            voiceStatus.textContent = 'Response:';
-                            voiceResponse.style.display = 'block';
-                            
-                            const weatherRisk = document.getElementById('weatherRisk').textContent;
-                            const birdRisk = document.getElementById('birdRisk').textContent;
-                            
-                            if (weatherRisk !== '--') {
-                                voiceResponse.textContent = `The current weather risk along your route is ${weatherRisk} out of 10, and the bird strike risk is ${birdRisk} out of 10. Overall, conditions are ${parseFloat(weatherRisk) < 5 ? 'favorable' : 'challenging'} for your flight.`;
-                            } else {
-                                voiceResponse.textContent = 'Please plan a route first, and I can provide you with detailed weather and bird risk information along your flight path.';
-                            }
-                        }, 1000);
-                    }, 2000);
-                }, 2000);
-            } else {
-                voiceIcon.classList.remove('listening');
-                voiceStatus.textContent = 'Click to start speaking';
-            }
-        }
-
-        // Close modals when clicking outside
-        window.onclick = function(event) {
-            if (event.target.classList.contains('modal')) {
-                event.target.classList.remove('active');
-                if (AppData.isListening) {
-                    toggleVoiceListening();
-                }
-            }
-        }
-
-        // Initialize on page load
         window.addEventListener('DOMContentLoaded', loadAirports);
     </script>
 </body>
